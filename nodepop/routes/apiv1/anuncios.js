@@ -5,60 +5,118 @@ const router = express.Router();
 
 const Anuncio = require('../../models/Anuncio');
 
-router.get('/', async (req, res, next) => { // async convierte el resultado en una promesa
-    /**
-     * Con callback
-     */
-    /*Agente.find().exec((err, docs) => {
-      if (err) {
-        next(err);
-        return;
-      }
-      // si no ha habido error
-      res.json({ success: true, result: docs });
-    });*/
-  
-    /**
-     * Con promesa
-     */
-    /*Agente.find().exec().then(docs => {
-      res.json({ success: true, result: docs });
-    }).catch(err => {
-      next(err);
-      return;
-    });*/
+// Listado de anuncios
+router.get('/', async (req, res, next) => {
   
     // Con async/await
     try {
   
-      // recogemos parámetros de entrada
+      // Se recogen los parámetros de entrada
       const nombre = req.query.nombre;
+      const venta = req.query.venta;
       const precio = req.query.precio;
+      const tags = req.query.tags;
       const skip = parseInt(req.query.skip);
       const limit = parseInt(req.query.limit);
       const sort = req.query.sort;
       const fields = req.query.fields;
   
-      console.log(req.query)
+      //console.log(req.query)
   
+      // Filtro vacío inicial
       const filtro = {};
   
-      if (typeof nombre !== 'undefined') { // si me piden filtrar por nombre...
-        filtro.nombre = nombre; // lo añado al filtro
+      // Filtrar por nombre
+      if (typeof nombre !== 'undefined') {
+        // Se añade el nombre (por el que empiece) al filtro
+        filtro.nombre = new RegExp('^' + nombre, "i");
       }
-  
+
+      // Filtrar por tipo de anuncio (true -> venta / false -> búsqueda)
+      if (typeof venta !== 'undefined') {
+        // Se añade el tipo de anuncio al filtro
+        filtro.venta = venta;
+      }
+
+      // Filtrar por precio
       if (typeof precio !== 'undefined') {
-        filtro.precio = precio;
+        // Se filtra por precio
+        filtro.precio = filtrarPrecio(precio);
       }
+
+      // Filtrar por tags
+      if (typeof tags !== 'undefined') {
+        // Se introduce dentro de un vector el tag buscado
+        filtro.tags = [tags];
+
+        // Se comprueba si el tag está dentro de los tags de la base de datos
+        filtro.tags = {$in: filtro.tags};
+    }
   
-      const docs = await Anuncio.listar(filtro, skip, limit, sort, fields); // si usamos await, la función donde estoy
-                                          // debe tener async
+      // La función debe ser asincróna si se usa await
+      const docs = await Anuncio.listar(filtro, skip, limit, sort, fields);
       
+      // Se devuelven los datos con un json
       res.json({ success: true, result: docs });  
+
     } catch(err) {
       next(err);
       return;
     }  
   });
+
+// Listado de tags
+router.get('/tags', function (req, res, next) {
+
+  var query = Anuncio.find({});
+
+  query.select('tags');
+
+  query.exec(function (err, rows) {
+
+    if (err) {
+      next(err);
+      return;
+    }
+
+    // Tags vació inicial
+    const tags = [];
+
+    // Se buscan los tags y se van añadiendo al listado
+    rows.forEach((row) => {
+      row.tags.forEach((tag) => {
+        if (tags.indexOf(tag) === -1)
+          tags.push(tag);
+      });
+    });
+
+    // Se devuelven los datos con un json
+    res.json({ success: true, result: tags });  
+
+  });
+
+});
+
+// Función para filtrar por precio
+function filtrarPrecio(precio) {
+
+  // Rango entre x-y ( > x && < y )
+  if (/^[0-9]+\-[0-9]+$/.test(precio)) {
+    return {'$gte': parseInt(precio.split('-')[0]), '$lte': parseInt(precio.split('-')[1])};
+  }
+
+  // Rango entre x- ( > x )
+  if (/^[0-9]+\-$/.test(precio)) {
+    return {'$gte': parseInt(precio.match(/[0-9]+/))};
+  }
+
+  // Rango entre -y ( < y )
+  if (/^-[0-9]+$/.test(precio)) {
+      return {'$lte': parseInt(precio.match(/[0-9]+/))};
+  }
+
+  return parseInt(precio);
+
+}
 
   module.exports = router;

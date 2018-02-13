@@ -21,3 +21,9 @@ anuncioSchema.statics.listar = function(filtro, skip, limit, sort, fields, callb
     query.select(fields);
     return query.exec(callback);
   };
+
+// Se crea el modelo
+const Anuncio = mongoose.model('Anuncio', anuncioSchema);
+
+// Se exporta el modelo
+module.exports = Anuncio;
