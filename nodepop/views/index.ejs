@@ -6,9 +6,28 @@
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Listado de anuncios:</p>
-    <!--<% anuncios.forEach(anuncio => {  %>
-      <p><%= anuncio.nombre %></p>
-    <% }) %>-->
+    <h2>Listado de anuncios:</h2>
+    <ul>
+      <% anuncios.forEach(anuncio => {  %>
+        <br>
+        <li>
+          <p><b>Artículo:</b> <%= anuncio.nombre %></p>
+          <p><b>Tipo: </b>
+            <% if (anuncio.venta) { %>
+              Se vende
+            <% } else { %>
+              Se busca
+            <% } %>
+          </p>
+          <p><b>Precio:</b> <%= anuncio.precio %> €</p>
+          <p><b>Etiquetas: </b>
+            <% anuncio.tags.forEach(tag => {  %>
+              <%= tag %>
+            <% }) %>
+          </p>
+          <img src="images/anuncios/<%= anuncio.foto %>" alt="Foto Articulo" width="250" height="200">
+        </li>
+      <% }) %>
+    </ul>
   </body>
 </html>

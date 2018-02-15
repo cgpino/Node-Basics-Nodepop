@@ -97,6 +97,29 @@ router.get('/tags', function (req, res, next) {
 
 });
 
+// Crear anuncio
+router.post('/', (req, res, next) => {
+
+  //console.log(req.body);
+
+  // Se obtienen los datos facilitados
+  const data = req.body;
+  
+  // Se crea documento del anuncio en memoria
+  const anuncio = new Anuncio(data);
+  
+  // Se guarda en la base de datos
+  anuncio.save((err, anuncioSaved) => {
+    if (err) {
+      next(err);
+      return;
+    }
+
+    // Se devuelve un json con el archivo guardado
+    res.json({ success: true, result: anuncioSaved });
+  });
+});
+
 // Función para filtrar por precio
 function filtrarPrecio(precio) {
 
