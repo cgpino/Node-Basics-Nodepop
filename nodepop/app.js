@@ -73,8 +73,9 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+// Comprueba la petición corresponde a una API
 function isAPI(req) {
-  return req.originalUrl.indexOf('/apiv1') === 0;
+  return req.originalUrl.indexOf('/apiv') === 0;
 }
 
 module.exports = app;

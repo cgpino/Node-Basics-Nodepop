@@ -1,11 +1,13 @@
 {
   "name": "nodepop",
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "Servicio de API de prueba para comprar y vender objetos",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "dev": "cross-env DEBUG=nodeapi:* nodemon ./bin/www"
   },
+  "author": "Carlos Gómez Pino",
   "dependencies": {
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",

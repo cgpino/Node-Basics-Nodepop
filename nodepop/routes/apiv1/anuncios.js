@@ -3,9 +3,10 @@
 const express = require('express');
 const router = express.Router();
 
+// Se carga el modelo
 const Anuncio = require('../../models/Anuncio');
 
-// Listado de anuncios
+// Listado de anuncios JSON
 router.get('/', async (req, res, next) => {
   
     // Con async/await
@@ -20,8 +21,6 @@ router.get('/', async (req, res, next) => {
       const limit = parseInt(req.query.limit);
       const sort = req.query.sort;
       const fields = req.query.fields;
-  
-      //console.log(req.query)
   
       // Filtro vacío inicial
       const filtro = {};
@@ -53,7 +52,7 @@ router.get('/', async (req, res, next) => {
         filtro.tags = {$in: filtro.tags};
     }
   
-      // La función debe ser asincróna si se usa await
+      // La función debe ser asíncrona si se usa await
       const docs = await Anuncio.listar(filtro, skip, limit, sort, fields);
       
       // Se devuelven los datos con un json
@@ -79,7 +78,7 @@ router.get('/tags', function (req, res, next) {
       return;
     }
 
-    // Tags vació inicial
+    // Tags vacío inicial
     const tags = [];
 
     // Se buscan los tags y se van añadiendo al listado
@@ -99,8 +98,6 @@ router.get('/tags', function (req, res, next) {
 
 // Crear anuncio
 router.post('/', (req, res, next) => {
-
-  //console.log(req.body);
 
   // Se obtienen los datos facilitados
   const data = req.body;
@@ -139,7 +136,6 @@ function filtrarPrecio(precio) {
   }
 
   return parseInt(precio);
-
 }
 
   module.exports = router;
