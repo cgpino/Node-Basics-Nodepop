@@ -14,4 +14,4 @@ conn.once('open', () => {
   console.log('Conectado a MongoDB en', mongoose.connection.name);
 });
 
-mongoose.connect('mongodb://localhost/anuncios');
+mongoose.connect('mongodb://localhost/nodepop');
